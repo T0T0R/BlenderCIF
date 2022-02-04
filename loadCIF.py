@@ -59,6 +59,6 @@ cell_space_group = block.find_value("_symmetry_space_group_name_H-M")
 for i in range(len(Atoms_label)):
     Atomic_table.append( Atom([Atoms_site_fract_x[i], Atoms_site_fract_y[i], Atoms_site_fract_z[i]], Atoms_label[i], Atoms_type_symbol[i] ) )
 
-My_cell = Cell([cell_length_a,cell_length_b,cell_length_c], [cell_angle_alpha,cell_angle_beta,cell_angle_gamma], EquivPos, cell_space_group)
+My_cell = Cell([cell_length_a,cell_length_b,cell_length_c], [cell_angle_alpha,cell_angle_beta,cell_angle_gamma], EquivPos, cell_space_group, Atomic_table)
 
 print("test")
