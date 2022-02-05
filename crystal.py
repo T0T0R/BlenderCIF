@@ -24,6 +24,8 @@ class Atom:
         return self.__label
     def get_atom_type(self):
         return self.__atom_type
+    def get_equiv_positions(self):
+        return self.__equiv_positions
     
     @classmethod
     def is_same_position(cls, posA, posB):
@@ -62,6 +64,8 @@ class Cell:
         return self.__angle_beta
     def get_angle_gamma(self):
         return self.__angle_gamma
+    def get_atom_list(self):
+        return self.__atom_list
 
 
 

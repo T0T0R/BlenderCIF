@@ -4,6 +4,8 @@ from crystal import Cell
 import sys
 from gemmi import cif # MPL-2.0 License
 
+
+
 path = "./MIL-177-LT.cif"
 
 greeted = set()
@@ -52,5 +54,6 @@ for i in range(len(Atoms_label)):
 
 My_cell = Cell([cell_length_a,cell_length_b,cell_length_c], [cell_angle_alpha,cell_angle_beta,cell_angle_gamma], EquivPos, cell_space_group, Atomic_table)
 My_cell.fill_cell()
+
 
 print("done.")
