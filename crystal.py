@@ -2,6 +2,8 @@ import numpy as np
 
 class Atom:
     no = 0
+    position_error = 0.01 # Two positions with less than 1% difference are the same.
+    
     
     def __init__(self, location=[0.0, 0.0, 0.0], label="X", atom_type="Dummy"):
         self.__location = location
@@ -23,9 +25,14 @@ class Atom:
     def get_atom_type(self):
         return self.__atom_type
     
+    @classmethod
+    def is_same_position(cls, posA, posB):
+        return (posA[0]-posB[0])**2 + (posA[1]-posB[1])**2 + (posA[2]-posB[2])**2 < cls.position_error**2
+    
+
     def add_equiv_position(self, position):
         corrected_position = [a % 1.0 for a in position]
-        if corrected_position not in self.__equiv_positions:
+        if all(not self.is_same_position(corrected_position, existing_position) for existing_position in self.__equiv_positions):
             self.__equiv_positions.append(corrected_position)
 
 
