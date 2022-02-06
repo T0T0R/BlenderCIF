@@ -21,6 +21,8 @@ class Tools:
         print(central_position)
         
         for Other_atom in atoms_list:
+            if Other_atom.get_id() == Central_atom.get_id():    # Avoiding the atom to evaluate itself.
+                continue
             if cls.distance_sq(central_position, Other_atom.get_cartesian_position()) <= max_dist_sq:
                 neighbors_list.append(Other_atom)
         
