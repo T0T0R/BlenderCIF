@@ -9,21 +9,25 @@ class Atom:
     
     
     def __init__(self, location=[0.0, 0.0, 0.0], label="X", atom_type="Dummy"):
-        self.__location = location
+        self.__location = [a % 1.0 for a in location]   # Fractional coordinates
+        self.__cartesian_position = [0.0, 0.0, 0.0]
         
         if label == "X":
             self.__label = "X" + str(Atom.no)
         else:
             self.__label = label
-            
+        
+        self.__id = Atom.no
         self.__atom_type = atom_type
-        self.__equiv_positions = []
-        self.__equiv_positions_cart = []
+        self.__equiv_positions = []         # in fractional coordinates
+        self.__equiv_positions_cart = []    # in cartesian coordinates
         
         Atom.no += 1
 
     def get_location(self):
         return self.__location
+    def get_cartesian_position(self):
+        return self.__cartesian_position    
     def get_label(self):
         return self.__label
     def get_atom_type(self):
@@ -32,9 +36,13 @@ class Atom:
         return self.__equiv_positions
     def get_equiv_positions_cart(self):
         return self.__equiv_positions_cart
+    def get_id(self):
+        return self.__id    
     
     def set_equiv_positions_cart(self, equiv_positions_cart):
         self.__equiv_positions_cart = equiv_positions_cart[:]
+    def set_cartesian_position(self, cartesian_position):
+        self.__cartesian_position = cartesian_position[:]        
         
     
     @classmethod
@@ -52,17 +60,6 @@ class Atom:
 
 
 class Cell:    
-    def __init__(self, lengths=[0.0, 0.0, 0.0], angles=[90.0, 90.0, 90.0], equiv_pos=['x, y, z'], space_group="", atom_list=[]):
-        self.__lenght_a = lengths[0]
-        self.__lenght_b = lengths[1]
-        self.__lenght_c = lengths[2]
-        self.__angle_alpha = angles[0]
-        self.__angle_beta = angles[1]
-        self.__angle_gamma = angles[2]
-        self.__equiv_pos = equiv_pos
-        self.__space_group = space_group
-        self.__atom_list = atom_list
-    
     def __init__(self, My_CIF):
         self.__lenght_a, self.__lenght_b, self.__lenght_c = My_CIF.get_lengths()
         self.__angle_alpha, self.__angle_beta, self.__angle_gamma = My_CIF.get_angles()
@@ -72,6 +69,8 @@ class Cell:
         self.__atom_list = []
         for i in range(len(My_CIF.get_atom_labels())):
             self.__atom_list.append( Atom([My_CIF.get_atoms_site_fract_x()[i], My_CIF.get_atoms_site_fract_y()[i], My_CIF.get_atoms_site_fract_z()[i]], My_CIF.get_atom_labels()[i], My_CIF.get_atom_type_symbols()[i] ) )
+        
+        self.__equiv_atoms_list = []    # The list that will store every real atom in the cell (including equivalent ones).
         
         
     def get_length_a(self):
@@ -88,6 +87,8 @@ class Cell:
         return self.__angle_gamma
     def get_atom_list(self):
         return self.__atom_list
+    def get_equiv_atom_list(self):
+        return self.__equiv_atoms_list
 
 
 
@@ -156,7 +157,8 @@ class Cell:
             npT = np.array(T)
             npA = np.array(atom.get_location())   # Original position.
             npB = np.matmul(npS,npA) + npT    # Applying symmetry and translation.
-            atom.add_equiv_position(list(npB))
+            atom.add_equiv_position(list(npB)) # Stores the fractional coordinates of equivalent positions in the orginial atoms list
+            self.__equiv_atoms_list.append(Atom(list(npB), atom.get_label(), atom.get_atom_type())) # Add an equivalent atom at the fractionnal coordinate of equivalent position.
             
     
     def fract_coords_to_cartesian_coords(self):
@@ -173,8 +175,26 @@ class Cell:
         def convert_to_cartesian_coord(f_coord):
             return list( np.matmul(M , np.array(f_coord)) )
         
-        for atom in self.__atom_list:
+        for atom in self.__atom_list: # Building a list of equivalent cartesian coordinates for each original atom.
             c_coords_list = []
             for f_coord in atom.get_equiv_positions():
                 c_coords_list.append(convert_to_cartesian_coord(f_coord))
             atom.set_equiv_positions_cart(c_coords_list)
+        
+        for atom in self.__equiv_atoms_list: # Calculating the cartesian coordinates for each equivalent atom.
+            c_coord = convert_to_cartesian_coord(atom.get_location())
+            atom.set_cartesian_position(c_coord)        
+     
+    @classmethod  
+    def fract_coord_to_cartesian_coord(cls, a, b, c, alpha, beta, gamma, f_coord):
+        alphaR = np.deg2rad(alpha)
+        betaR = np.deg2rad(beta)
+        gammaR = np.deg2rad(gamma)
+        a,b,c = self.__lenght_a,self.__lenght_b,self.__lenght_c
+        V = a*b*c*m.pow(1 - m.pow(m.cos(alphaR),2) - m.pow(m.cos(betaR),2) - m.pow(m.cos(gammaR),2) + 2*b*c*m.cos(alphaR)*m.cos(betaR)*m.cos(gammaR), 0.5)
+
+        M = np.array([[a , b*np.cos(gammaR), c*np.cos(betaR)],
+                      [0.0 , b*np.sin(gammaR) , c*(np.cos(alphaR)-np.cos(betaR)*np.cos(gammaR))/np.sin(gammaR)],
+                      [0.0 , 0.0 , V/(a*b*np.sin(gammaR))]])
+
+        return list( np.matmul(M , np.array(f_coord)) )    

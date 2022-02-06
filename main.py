@@ -7,11 +7,22 @@ import json
 
 path = "./MIL-177-HT.cif"
 
-MyCIF = CIF(path)
-My_cell = Cell(MyCIF)
-My_cell.fill_cell()
-My_cell.fract_coords_to_cartesian_coords()
 
-Vis3D(My_cell)
+class MainClass:
+    def __init__(self, path):
+        MyCIF = CIF(path)
+        self.__My_cell = Cell(MyCIF)
+
+    def initialize_cell(self):
+        self.__My_cell.fill_cell()
+        self.__My_cell.fract_coords_to_cartesian_coords()
+    
+    def debug(self, is_cartesian_coord=True):
+        Vis3D(self.__My_cell, is_cartesian_coord)
+
+
+MyObject = MainClass(path)
+MyObject.initialize_cell()
+MyObject.debug()
 
 print("done.")

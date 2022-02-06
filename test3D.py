@@ -20,22 +20,27 @@ class Vis3D:
         C=[]
         S=[]
         
-        for atom in MyCell.get_atom_list():
+        for atom in MyCell.get_equiv_atom_list():
             if atom.get_label()=="Ow1" or atom.get_label()=="Ow2" or atom.get_label()=="Ow3" or atom.get_label()=="Ow4":
                 continue
             
             if is_cartesian_coord:
-                equiv_pos = atom.get_equiv_positions_cart()
+                equiv_pos = atom.get_cartesian_position()
             else:
-                equiv_pos = atom.get_equiv_positions()
+                equiv_pos = atom.get_location()
 
-            for i in range(len(equiv_pos)):
-                X.append(equiv_pos[i][0])
-                Y.append(equiv_pos[i][1])
-                Z.append(equiv_pos[i][2])
-                C.append(COLORS[atom.get_atom_type()])
-                S.append(SIZES[atom.get_atom_type()])
+            #for i in range(len(equiv_pos)):
+                #X.append(equiv_pos[i][0])
+                #Y.append(equiv_pos[i][1])
+                #Z.append(equiv_pos[i][2])
+                #C.append(COLORS[atom.get_atom_type()])
+                #S.append(SIZES[atom.get_atom_type()])
                 
+            X.append(equiv_pos[0])
+            Y.append(equiv_pos[1])
+            Z.append(equiv_pos[2])
+            C.append(COLORS[atom.get_atom_type()])
+            S.append(SIZES[atom.get_atom_type()])    
         
         ax.scatter3D(X, Y, Z, c=C, s=S)
         ax.set_xlabel("Axis X")
@@ -44,8 +49,5 @@ class Vis3D:
         ax.set_xlim(-10.0, 20.0) 
         ax.set_ylim(0.00, 30.00)
         ax.set_zlim(0.00, 30.00)
-        #plt.xlim(-10.0, 20.0)
-        #plt.ylim(0.00, 30.00)        
-        #plt.zlim(0.00, 30.00)        
         
         plt.show()
