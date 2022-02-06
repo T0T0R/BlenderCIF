@@ -1,4 +1,7 @@
+import math as m
 import numpy as np
+
+from loadCIF import CIF
 
 class Atom:
     no = 0
@@ -15,6 +18,7 @@ class Atom:
             
         self.__atom_type = atom_type
         self.__equiv_positions = []
+        self.__equiv_positions_cart = []
         
         Atom.no += 1
 
@@ -26,6 +30,12 @@ class Atom:
         return self.__atom_type
     def get_equiv_positions(self):
         return self.__equiv_positions
+    def get_equiv_positions_cart(self):
+        return self.__equiv_positions_cart
+    
+    def set_equiv_positions_cart(self, equiv_positions_cart):
+        self.__equiv_positions_cart = equiv_positions_cart[:]
+        
     
     @classmethod
     def is_same_position(cls, posA, posB):
@@ -36,6 +46,8 @@ class Atom:
         corrected_position = [a % 1.0 for a in position]
         if all(not self.is_same_position(corrected_position, existing_position) for existing_position in self.__equiv_positions):
             self.__equiv_positions.append(corrected_position)
+
+            
 
 
 
@@ -50,6 +62,16 @@ class Cell:
         self.__equiv_pos = equiv_pos
         self.__space_group = space_group
         self.__atom_list = atom_list
+    
+    def __init__(self, My_CIF):
+        self.__lenght_a, self.__lenght_b, self.__lenght_c = My_CIF.get_lengths()
+        self.__angle_alpha, self.__angle_beta, self.__angle_gamma = My_CIF.get_angles()
+        self.__equiv_pos = My_CIF.get_equiv_positions()
+        self.__space_group = My_CIF.get_space_group()
+        
+        self.__atom_list = []
+        for i in range(len(My_CIF.get_atom_labels())):
+            self.__atom_list.append( Atom([My_CIF.get_atoms_site_fract_x()[i], My_CIF.get_atoms_site_fract_y()[i], My_CIF.get_atoms_site_fract_z()[i]], My_CIF.get_atom_labels()[i], My_CIF.get_atom_type_symbols()[i] ) )
         
         
     def get_length_a(self):
@@ -135,3 +157,24 @@ class Cell:
             npA = np.array(atom.get_location())   # Original position.
             npB = np.matmul(npS,npA) + npT    # Applying symmetry and translation.
             atom.add_equiv_position(list(npB))
+            
+    
+    def fract_coords_to_cartesian_coords(self):
+        alphaR = m.radians(self.__angle_alpha)
+        betaR = m.radians(self.__angle_beta)
+        gammaR = m.radians(self.__angle_gamma)
+        a,b,c = self.__lenght_a,self.__lenght_b,self.__lenght_c
+        V = a*b*c*m.pow(1 - m.pow(m.cos(alphaR),2) - m.pow(m.cos(betaR),2) - m.pow(m.cos(gammaR),2) - 2*b*c*m.cos(alphaR)*m.cos(betaR)*m.cos(gammaR), 0.5)
+
+        M = np.array([[a , b*m.cos(gammaR), c*m.cos(betaR)],
+                      [0 , b*m.sin(gammaR) , c*(m.cos(alphaR)-m.cos(betaR)*m.cos(gammaR))/m.sin(gammaR)],
+                    [0 , 0 , V/(a*b*m.sin(gammaR))]])
+
+        def convert_to_cartesian_coord(f_coord):
+            return list( np.matmul(M , np.array(f_coord)) )
+        
+        for atom in self.__atom_list:
+            c_coords_list = []
+            for f_coord in atom.get_equiv_positions():
+                c_coords_list.append(convert_to_cartesian_coord(f_coord))
+            atom.set_equiv_positions_cart(c_coords_list)

@@ -1,20 +1,15 @@
-import loadCIF
+from loadCIF import CIF
+from crystal import Cell
 
-import bpy
+#import bpy
 import json
 
-def draw_cell(cell):
-    for atom in cell:
-        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.05, location = atom.location)
-        bpy.ops.object.shade_smooth()
+path = "./MIL-177-LT.cif"
+
+MyCIF = CIF(path)
+My_cell = Cell(MyCIF)
+My_cell.fill_cell()
+My_cell.fract_coords_to_cartesian_coords()
 
 
-
-
-class Atom:
-    def __init__(self):
-        self.location = [0.252, -0.116, -0.704]
-
-
-molecule = [Atom()]
-draw_cell(molecule)
+print("done.")
