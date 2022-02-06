@@ -1,10 +1,11 @@
 from loadCIF import CIF
 from crystal import Cell
+from test3D import Vis3D
 
 #import bpy
 import json
 
-path = "./MIL-177-LT.cif"
+path = "./MIL-177-HT.cif"
 
 MyCIF = CIF(path)
 My_cell = Cell(MyCIF)
