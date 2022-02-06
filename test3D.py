@@ -37,5 +37,15 @@ class Vis3D:
                 S.append(SIZES[atom.get_atom_type()])
                 
         
-        ax.scatter3D(X, Y, Z, c=C, s=S);
+        ax.scatter3D(X, Y, Z, c=C, s=S)
+        ax.set_xlabel("Axis X")
+        ax.set_ylabel("Axis Y")
+        ax.set_zlabel("Axis Z")
+        ax.set_xlim(-10.0, 20.0) 
+        ax.set_ylim(0.00, 30.00)
+        ax.set_zlim(0.00, 30.00)
+        #plt.xlim(-10.0, 20.0)
+        #plt.ylim(0.00, 30.00)        
+        #plt.zlim(0.00, 30.00)        
+        
         plt.show()

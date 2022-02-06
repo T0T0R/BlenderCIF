@@ -160,15 +160,15 @@ class Cell:
             
     
     def fract_coords_to_cartesian_coords(self):
-        alphaR = m.radians(self.__angle_alpha)
-        betaR = m.radians(self.__angle_beta)
-        gammaR = m.radians(self.__angle_gamma)
+        alphaR = np.deg2rad(self.__angle_alpha)
+        betaR = np.deg2rad(self.__angle_beta)
+        gammaR = np.deg2rad(self.__angle_gamma)
         a,b,c = self.__lenght_a,self.__lenght_b,self.__lenght_c
-        V = a*b*c*m.pow(1 - m.pow(m.cos(alphaR),2) - m.pow(m.cos(betaR),2) - m.pow(m.cos(gammaR),2) - 2*b*c*m.cos(alphaR)*m.cos(betaR)*m.cos(gammaR), 0.5)
+        V = a*b*c*m.pow(1 - m.pow(m.cos(alphaR),2) - m.pow(m.cos(betaR),2) - m.pow(m.cos(gammaR),2) + 2*b*c*m.cos(alphaR)*m.cos(betaR)*m.cos(gammaR), 0.5)
 
-        M = np.array([[a , b*m.cos(gammaR), c*m.cos(betaR)],
-                      [0 , b*m.sin(gammaR) , c*(m.cos(alphaR)-m.cos(betaR)*m.cos(gammaR))/m.sin(gammaR)],
-                    [0 , 0 , V/(a*b*m.sin(gammaR))]])
+        M = np.array([[a , b*np.cos(gammaR), c*np.cos(betaR)],
+                      [0.0 , b*np.sin(gammaR) , c*(np.cos(alphaR)-np.cos(betaR)*np.cos(gammaR))/np.sin(gammaR)],
+                    [0.0 , 0.0 , V/(a*b*np.sin(gammaR))]])
 
         def convert_to_cartesian_coord(f_coord):
             return list( np.matmul(M , np.array(f_coord)) )
