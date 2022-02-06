@@ -45,9 +45,9 @@ class Atom:
         self.__cartesian_position = cartesian_position[:]        
         
     
-    @classmethod
-    def is_same_position(cls, posA, posB):
-        return (posA[0]-posB[0])**2 + (posA[1]-posB[1])**2 + (posA[2]-posB[2])**2 < cls.position_error**2
+    @staticmethod
+    def is_same_position(posA, posB, error_sq=position_error**2):
+        return (posA[0]-posB[0])**2 + (posA[1]-posB[1])**2 + (posA[2]-posB[2])**2 < error_sq
     
 
     def add_equiv_position(self, position):
@@ -98,7 +98,7 @@ class Cell:
             return
         else:
             for atom in self.__atom_list:
-                self.calculate_equiv_atoms(atom)
+                self.calculate_equiv_cart_coord(atom)
 
     @classmethod    
     def equiv_pos_matrices(cls, string):    # eg. string = "-x+y, 1/2+y, -z-1/2"
@@ -150,15 +150,18 @@ class Cell:
         return([x_value, y_value, z_value], transl_value)
     
     
-    def calculate_equiv_atoms(self, atom):
+    
+    
+    def calculate_equiv_cart_coord(self, atom):
         for equiv_position_string in self.__equiv_pos:
             S, T = Cell.equiv_pos_matrices(equiv_position_string)
             npS = np.array(S)
             npT = np.array(T)
             npA = np.array(atom.get_location())   # Original position.
             npB = np.matmul(npS,npA) + npT    # Applying symmetry and translation.
+            
             atom.add_equiv_position(list(npB)) # Stores the fractional coordinates of equivalent positions in the orginial atoms list
-            self.__equiv_atoms_list.append(Atom(list(npB), atom.get_label(), atom.get_atom_type())) # Add an equivalent atom at the fractionnal coordinate of equivalent position.
+
             
     
     def fract_coords_to_cartesian_coords(self):
@@ -181,9 +184,7 @@ class Cell:
                 c_coords_list.append(convert_to_cartesian_coord(f_coord))
             atom.set_equiv_positions_cart(c_coords_list)
         
-        for atom in self.__equiv_atoms_list: # Calculating the cartesian coordinates for each equivalent atom.
-            c_coord = convert_to_cartesian_coord(atom.get_location())
-            atom.set_cartesian_position(c_coord)        
+
      
     @classmethod  
     def fract_coord_to_cartesian_coord(cls, a, b, c, alpha, beta, gamma, f_coord):
@@ -197,4 +198,12 @@ class Cell:
                       [0.0 , b*np.sin(gammaR) , c*(np.cos(alphaR)-np.cos(betaR)*np.cos(gammaR))/np.sin(gammaR)],
                       [0.0 , 0.0 , V/(a*b*np.sin(gammaR))]])
 
-        return list( np.matmul(M , np.array(f_coord)) )    
+        return list( np.matmul(M , np.array(f_coord)) )
+    
+    
+    def fill_equiv_atoms(self):
+        for atom in self.__atom_list:
+            for equiv_position_cart in atom.get_equiv_positions_cart():
+                temp_atom = Atom(equiv_position_cart, atom.get_label(), atom.get_atom_type())
+                temp_atom.set_cartesian_position(equiv_position_cart)
+                self.__equiv_atoms_list.append(temp_atom)

@@ -8,7 +8,7 @@ from crystal import Cell
 from crystal import Atom
 
 class Vis3D:
-    def __init__(self, MyCell, is_cartesian_coord=True):
+    def __init__(self, atom_list, is_cartesian_coord=True):
         fig = plt.figure()
         ax = plt.axes(projection='3d')  
         
@@ -20,7 +20,7 @@ class Vis3D:
         C=[]
         S=[]
         
-        for atom in MyCell.get_equiv_atom_list():
+        for atom in atom_list:
             if atom.get_label()=="Ow1" or atom.get_label()=="Ow2" or atom.get_label()=="Ow3" or atom.get_label()=="Ow4":
                 continue
             
