@@ -21,6 +21,9 @@ class MainClass:
         
     
     def debug(self, is_cartesian_coord=True):
+        neighbors_cells = t.calculate_neighbors_cells(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0])
+        Vis3D(neighbors_cells, is_cartesian_coord)
+
         #neighbors_list = t.neighbors(self.__My_cell.get_equiv_atom_list()[0], self.__My_cell.get_equiv_atom_list(), True)
         #Vis3D(neighbors_list, is_cartesian_coord)
 

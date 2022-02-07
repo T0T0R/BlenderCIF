@@ -13,7 +13,7 @@ class Vis3D:
         ax = plt.axes(projection='3d')  
         
         COLORS = {'Ti':'blue', 'C':'black', 'O':'red', 'H':'white'}
-        SIZES = {'Ti':15, 'C':6, 'O':6, 'H':2}
+        SIZES = {'Ti':30, 'C':6, 'O':6, 'H':2}
         X=[]
         Y=[]
         Z=[]
@@ -46,8 +46,12 @@ class Vis3D:
         ax.set_xlabel("Axis X")
         ax.set_ylabel("Axis Y")
         ax.set_zlabel("Axis Z")
-        ax.set_xlim(-10.0, 20.0) 
-        ax.set_ylim(0.00, 30.00)
-        ax.set_zlim(0.00, 30.00)
+        #ax.set_xlim(-10.0, 20.0) 
+        #ax.set_ylim(0.00, 30.00)
+        #ax.set_zlim(0.00, 30.00)
+
+        ax.set_xlim(-40.0, 50.0) 
+        ax.set_ylim(-30.00, 60.00)
+        ax.set_zlim(-15.0, 15.00)
         
         plt.show()
