@@ -1,16 +1,18 @@
 from crystal import Atom
 from crystal import Cell
+from vect import vect3D as v
+from geom import Bond
 
 
 import math as m
 import numpy as np
 
-class Tools:
-    @classmethod
-    def distance_sq(cls, posA, posB):   # Calculates the distance squared between two positions.
-        return m.pow(posA[0]-posB[0], 2.0) + m.pow(posA[1]-posB[1], 2.0) + m.pow(posA[2]-posB[2], 2.0)
-    
 
+
+
+
+
+class Tools:
     @classmethod
     def calculate_neighbors_cells(cls, My_Cell, Central_atom): # Calculates the equivalent atoms of Atom in the 8 cells around the central one.
         atoms_list = [Central_atom]
@@ -57,18 +59,31 @@ class Tools:
             repeated_other_atom_list = cls.calculate_neighbors_cells(My_Cell, Other_atom)
 
             for repeated_other in repeated_other_atom_list:
-                if cls.distance_sq(central_position, repeated_other.get_cartesian_position()) <= max_dist_sq:
+                if v.distance_sq(central_position, repeated_other.get_cartesian_position()) <= max_dist_sq:
                     neighbors_list.append(repeated_other)
         
         if nearest_atom:    # Sort the list by distance with central atom
             def d_sq(Other_atom):
                 posB = Other_atom.get_cartesian_position()
-                return cls.distance_sq(central_position, posB)
+                return v.distance_sq(central_position, posB)
             
             neighbors_list.sort(key=d_sq)
         
         print("others:")
         for atom in neighbors_list:
             print(atom.get_cartesian_position())
-            print(cls.distance_sq(atom.get_cartesian_position(), central_position)**0.5)
+            print(v.distance_sq(atom.get_cartesian_position(), central_position)**0.5)
         return neighbors_list
+
+
+
+    @classmethod
+    def calculate_bonds_for_one_atom(cls, My_Cell, Central_atom, allowed_atoms=None):
+        neighbors = cls.neighbors(My_Cell, Central_atom, My_Cell.get_equiv_atom_list(), allowed_atoms)
+        bonds = []
+        for other_atom in neighbors:
+            #Central_atom.connect(other_atom)
+            #other_atom.connect(Central_atom)
+            bonds.append(Bond(Central_atom, other_atom))
+
+        return bonds
