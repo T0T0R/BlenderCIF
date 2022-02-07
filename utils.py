@@ -38,7 +38,7 @@ class Tools:
     
     
     @classmethod
-    def neighbors(cls, My_Cell, Central_atom, atoms_list, nearest_atom=False):  # Gives a list of the nearest atoms based on a maximum distance.
+    def neighbors(cls, My_Cell, Central_atom, atoms_list, allowed_atoms=None, nearest_atom=False):  # Gives a list of the nearest atoms based on a maximum distance.
         maximum_dist = 3.0  # in Angstrom.
         max_dist_sq = m.pow(maximum_dist, 2.0)
         neighbors_list = []
@@ -50,6 +50,9 @@ class Tools:
         for Other_atom in atoms_list:
             if Other_atom.get_id() == Central_atom.get_id():    # Avoiding the atom to evaluate itself.
                 continue
+            if not (allowed_atoms==None):
+                if not Other_atom.get_atom_type() in allowed_atoms:
+                    continue
 
             repeated_other_atom_list = cls.calculate_neighbors_cells(My_Cell, Other_atom)
 
@@ -69,4 +72,3 @@ class Tools:
             print(atom.get_cartesian_position())
             print(cls.distance_sq(atom.get_cartesian_position(), central_position)**0.5)
         return neighbors_list
-        

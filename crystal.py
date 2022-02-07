@@ -136,7 +136,7 @@ class Cell:
                 y_value = 1.0
         
         i = string.find("z")
-        if i == -1: # No y component
+        if i == -1: # No z component
             z_value = 0.0
         else:
             if (i-1 >= 0 and string[i-1]=="-"):

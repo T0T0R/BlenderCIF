@@ -23,8 +23,8 @@ class MainClass:
     
     def debug(self, is_cartesian_coord=True):
         
-        #neighbors_list = t.neighbors(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0], self.__My_cell.get_equiv_atom_list(), True)
-        #Vis3D(neighbors_list, is_cartesian_coord)
+        neighbors_list = t.neighbors(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0], self.__My_cell.get_equiv_atom_list(), allowed_atoms=["C"], nearest_atom=True)
+        Vis3D(neighbors_list, [], is_cartesian_coord)
 
         atom_list = self.__My_cell.get_equiv_atom_list()[:]
         MyBond = Bond(atom_list[0], atom_list[1])
