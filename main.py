@@ -21,11 +21,11 @@ class MainClass:
         
     
     def debug(self, is_cartesian_coord=True):
-        neighbors_cells = t.calculate_neighbors_cells(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0])
-        Vis3D(neighbors_cells, is_cartesian_coord)
+        #neighbors_cells = t.calculate_neighbors_cells(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0])
+        #Vis3D(neighbors_cells, is_cartesian_coord)
 
-        #neighbors_list = t.neighbors(self.__My_cell.get_equiv_atom_list()[0], self.__My_cell.get_equiv_atom_list(), True)
-        #Vis3D(neighbors_list, is_cartesian_coord)
+        neighbors_list = t.neighbors(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0], self.__My_cell.get_equiv_atom_list(), True)
+        Vis3D(neighbors_list, is_cartesian_coord)
 
         atom_list = self.__My_cell.get_equiv_atom_list()[:]
         atom_list[1].move_cart_pos_by_one_cell(self.__My_cell, [0,0,1])

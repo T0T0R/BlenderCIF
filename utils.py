@@ -50,8 +50,11 @@ class Tools:
             if Other_atom.get_id() == Central_atom.get_id():    # Avoiding the atom to evaluate itself.
                 continue
 
-            if cls.distance_sq(central_position, Other_atom.get_cartesian_position()) <= max_dist_sq:
-                neighbors_list.append(Other_atom)
+            repeated_other_atom_list = cls.calculate_neighbors_cells(My_Cell, Other_atom)
+
+            for repeated_other in repeated_other_atom_list:
+                if cls.distance_sq(central_position, repeated_other.get_cartesian_position()) <= max_dist_sq:
+                    neighbors_list.append(repeated_other)
         
         if nearest_atom:    # Sort the list by distance with central atom
             def d_sq(Other_atom):

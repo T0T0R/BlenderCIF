@@ -46,12 +46,12 @@ class Vis3D:
         ax.set_xlabel("Axis X")
         ax.set_ylabel("Axis Y")
         ax.set_zlabel("Axis Z")
-        #ax.set_xlim(-10.0, 20.0) 
-        #ax.set_ylim(0.00, 30.00)
-        #ax.set_zlim(0.00, 30.00)
+        ax.set_xlim(-10.0, 20.0) 
+        ax.set_ylim(0.00, 30.00)
+        ax.set_zlim(0.00, 30.00)
 
-        ax.set_xlim(-40.0, 50.0) 
-        ax.set_ylim(-30.00, 60.00)
-        ax.set_zlim(-15.0, 15.00)
+        #ax.set_xlim(-40.0, 50.0) 
+        #ax.set_ylim(-30.00, 60.00)
+        #ax.set_zlim(-15.0, 15.00)
         
         plt.show()
