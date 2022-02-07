@@ -17,7 +17,7 @@ class Tools:
         neighbors_list = []
         
         central_position = Central_atom.get_cartesian_position()
-        print("Center: ", sep="")
+        print("Center: ")
         print(central_position)
         
         for Other_atom in atoms_list:

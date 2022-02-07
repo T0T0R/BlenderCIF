@@ -54,6 +54,13 @@ class Atom:
         corrected_position = [a % 1.0 for a in position]
         if all(not self.is_same_position(corrected_position, existing_position) for existing_position in self.__equiv_positions):
             self.__equiv_positions.append(corrected_position)
+    
+
+    def move_cart_pos_by_one_cell(self, My_cell, cell_units):
+        cart_units = Cell.fract_coord_to_cartesian_coord(My_cell.get_length_a(), My_cell.get_length_b(), My_cell.get_length_c(), My_cell.get_angle_alpha(), My_cell.get_angle_beta(), My_cell.get_angle_gamma(), cell_units)
+        self.__cartesian_position[0] = self.__cartesian_position[0] + cart_units[0]
+        self.__cartesian_position[1] = self.__cartesian_position[1] + cart_units[1]
+        self.__cartesian_position[2] = self.__cartesian_position[2] + cart_units[2]
 
             
 
@@ -61,7 +68,7 @@ class Atom:
 
 class Cell:    
     def __init__(self, My_CIF):
-        self.__lenght_a, self.__lenght_b, self.__lenght_c = My_CIF.get_lengths()
+        self.__length_a, self.__length_b, self.__length_c = My_CIF.get_lengths()
         self.__angle_alpha, self.__angle_beta, self.__angle_gamma = My_CIF.get_angles()
         self.__equiv_pos = My_CIF.get_equiv_positions()
         self.__space_group = My_CIF.get_space_group()
@@ -168,7 +175,7 @@ class Cell:
         alphaR = np.deg2rad(self.__angle_alpha)
         betaR = np.deg2rad(self.__angle_beta)
         gammaR = np.deg2rad(self.__angle_gamma)
-        a,b,c = self.__lenght_a,self.__lenght_b,self.__lenght_c
+        a,b,c = self.__length_a,self.__length_b,self.__length_c
         V = a*b*c*m.pow(1 - m.pow(m.cos(alphaR),2) - m.pow(m.cos(betaR),2) - m.pow(m.cos(gammaR),2) + 2*b*c*m.cos(alphaR)*m.cos(betaR)*m.cos(gammaR), 0.5)
 
         M = np.array([[a , b*np.cos(gammaR), c*np.cos(betaR)],
@@ -186,12 +193,12 @@ class Cell:
         
 
      
-    @classmethod  
-    def fract_coord_to_cartesian_coord(cls, a, b, c, alpha, beta, gamma, f_coord):
+    @staticmethod  
+    def fract_coord_to_cartesian_coord(a, b, c, alpha, beta, gamma, f_coord):
         alphaR = np.deg2rad(alpha)
         betaR = np.deg2rad(beta)
         gammaR = np.deg2rad(gamma)
-        a,b,c = self.__lenght_a,self.__lenght_b,self.__lenght_c
+
         V = a*b*c*m.pow(1 - m.pow(m.cos(alphaR),2) - m.pow(m.cos(betaR),2) - m.pow(m.cos(gammaR),2) + 2*b*c*m.cos(alphaR)*m.cos(betaR)*m.cos(gammaR), 0.5)
 
         M = np.array([[a , b*np.cos(gammaR), c*np.cos(betaR)],

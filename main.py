@@ -18,10 +18,15 @@ class MainClass:
         self.__My_cell.fill_cell()
         self.__My_cell.fract_coords_to_cartesian_coords()
         self.__My_cell.fill_equiv_atoms()
+        
     
     def debug(self, is_cartesian_coord=True):
-        neighbors_list = t.neighbors(self.__My_cell.get_equiv_atom_list()[0], self.__My_cell.get_equiv_atom_list(), True)
-        Vis3D(neighbors_list, is_cartesian_coord)
+        #neighbors_list = t.neighbors(self.__My_cell.get_equiv_atom_list()[0], self.__My_cell.get_equiv_atom_list(), True)
+        #Vis3D(neighbors_list, is_cartesian_coord)
+
+        atom_list = self.__My_cell.get_equiv_atom_list()[:]
+        atom_list[1].move_cart_pos_by_one_cell(self.__My_cell, [0,0,1])
+        Vis3D(atom_list, is_cartesian_coord)
 
 
 MyObject = MainClass(path)
