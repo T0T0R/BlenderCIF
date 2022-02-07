@@ -26,12 +26,9 @@ class MainClass:
         
         neighbors_list = t.neighbors(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0], self.__My_cell.get_equiv_atom_list(), allowed_atoms=["O"], nearest_atom=True)
         bonds_list = t.calculate_bonds_for_one_atom(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0], allowed_atoms=["O"])
-        Vis3D(neighbors_list, bonds_list, is_cartesian_coord)
+        new_bonds = t.calculate_bonds_for_one_atom(self.__My_cell, self.__My_cell.get_equiv_atom_list()[1], allowed_atoms=["O"])
 
-        #atom_list = self.__My_cell.get_equiv_atom_list()[:]
-        #MyBond = Bond(atom_list[0], atom_list[1])
-        #print(MyBond.get_id())
-        #Vis3D(atom_list, [MyBond], is_cartesian_coord)
+        Vis3D(self.__My_cell.get_equiv_atom_list(), [*bonds_list,*new_bonds], is_cartesian_coord)
 
 
 MyObject = MainClass(path)

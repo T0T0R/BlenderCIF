@@ -20,6 +20,8 @@ class Atom:
         self.__atom_type = atom_type
         self.__equiv_positions = []         # in fractional coordinates
         self.__equiv_positions_cart = []    # in cartesian coordinates
+        self.__connected_to = []            # List of cartesians positions to which it is connected
+        self.__fake_atom = False            # The atom is fake if it is a repetition outside of the cell of an existing atom
         
         Atom.no += 1
 
@@ -36,12 +38,26 @@ class Atom:
     def get_equiv_positions_cart(self):
         return self.__equiv_positions_cart
     def get_id(self):
-        return self.__id    
+        return self.__id
+    def get_connections(self):
+        return self.__connected_to
+    def is_fake(self):
+        return self.__fake_atom
     
     def set_equiv_positions_cart(self, equiv_positions_cart):
         self.__equiv_positions_cart = equiv_positions_cart[:]
     def set_cartesian_position(self, cartesian_position):
-        self.__cartesian_position = cartesian_position[:]        
+        self.__cartesian_position = cartesian_position[:]
+    def fake(self):
+        self.__fake_atom = True
+
+    def connect(self, other_atom):
+        other_cart_pos = other_atom.get_cartesian_position()
+        if all(not Atom.is_same_position(other_cart_pos, connection_pos) for connection_pos in self.__connected_to): # If the connection has never been made with this other position:
+            self.__connected_to.append(other_cart_pos)
+            return True
+        else:   # If it has already been made:
+            return False
         
     
     @staticmethod

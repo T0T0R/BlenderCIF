@@ -22,15 +22,16 @@ class Tools:
                             [1,1,0], [1,-1,0], [-1,1,0], [-1,-1,0], 
                             
                             [1,1,1], [0,1,1], [-1,1,1],
-                            [1,0,1], [0,0,1], [-1,0,1],
+                            [1,0,1], [-1,0,1],
                             [1,-1,1], [0,-1,1], [-1,-1,1],
                             
                             [1,1,-1], [0,1,-1], [-1,1,-1],
-                            [1,0,-1], [0,0,-1], [-1,0,-1],
+                            [1,0,-1], [-1,0,-1],
                             [1,-1,-1], [0,-1,-1], [-1,-1,-1]]
 
         for move in fractional_moves:
             Temp_atom = Atom(label=Central_atom.get_label(), atom_type=Central_atom.get_atom_type())
+            Temp_atom.fake()
             Temp_atom.set_cartesian_position(Central_atom.get_cartesian_position())
             Temp_atom.move_cart_pos_by_one_cell(My_Cell, move)
             atoms_list.append(Temp_atom)
@@ -46,8 +47,6 @@ class Tools:
         neighbors_list = []
         
         central_position = Central_atom.get_cartesian_position()
-        print("Center: ")
-        print(central_position)
         
         for Other_atom in atoms_list:
             if Other_atom.get_id() == Central_atom.get_id():    # Avoiding the atom to evaluate itself.
@@ -69,10 +68,6 @@ class Tools:
             
             neighbors_list.sort(key=d_sq)
         
-        print("others:")
-        for atom in neighbors_list:
-            print(atom.get_cartesian_position())
-            print(v.distance_sq(atom.get_cartesian_position(), central_position)**0.5)
         return neighbors_list
 
 
@@ -81,9 +76,12 @@ class Tools:
     def calculate_bonds_for_one_atom(cls, My_Cell, Central_atom, allowed_atoms=None):
         neighbors = cls.neighbors(My_Cell, Central_atom, My_Cell.get_equiv_atom_list(), allowed_atoms)
         bonds = []
+
+        
         for other_atom in neighbors:
-            #Central_atom.connect(other_atom)
-            #other_atom.connect(Central_atom)
-            bonds.append(Bond(Central_atom, other_atom))
+            conn_a = Central_atom.connect(other_atom)
+            conn_b = other_atom.connect(Central_atom)
+            if conn_a and conn_b: # If both atoms are not already connected
+                    bonds.append(Bond(Central_atom, other_atom))
 
         return bonds
