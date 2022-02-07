@@ -8,7 +8,7 @@ from crystal import Cell
 from crystal import Atom
 
 class Vis3D:
-    def __init__(self, atom_list, is_cartesian_coord=True):
+    def __init__(self, atom_list, bonds_list=[], is_cartesian_coord=True):
         fig = plt.figure()
         ax = plt.axes(projection='3d')  
         
@@ -43,6 +43,11 @@ class Vis3D:
             S.append(SIZES[atom.get_atom_type()])    
         
         ax.scatter3D(X, Y, Z, c=C, s=S)
+
+        for bond in bonds_list:
+            posA, posB = bond.get_positions()
+            ax.plot3D([posA[0],posB[0]], [posA[1],posB[1]], [posA[2],posB[2]], 'black')
+        
         ax.set_xlabel("Axis X")
         ax.set_ylabel("Axis Y")
         ax.set_zlabel("Axis Z")

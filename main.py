@@ -2,6 +2,7 @@ from loadCIF import CIF
 from crystal import Cell
 from test3D import Vis3D
 from utils import Tools as t
+from geom import Bond
 
 #import bpy
 import json
@@ -21,15 +22,14 @@ class MainClass:
         
     
     def debug(self, is_cartesian_coord=True):
-        #neighbors_cells = t.calculate_neighbors_cells(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0])
-        #Vis3D(neighbors_cells, is_cartesian_coord)
-
-        neighbors_list = t.neighbors(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0], self.__My_cell.get_equiv_atom_list(), True)
-        Vis3D(neighbors_list, is_cartesian_coord)
+        
+        #neighbors_list = t.neighbors(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0], self.__My_cell.get_equiv_atom_list(), True)
+        #Vis3D(neighbors_list, is_cartesian_coord)
 
         atom_list = self.__My_cell.get_equiv_atom_list()[:]
-        atom_list[1].move_cart_pos_by_one_cell(self.__My_cell, [0,0,1])
-        Vis3D(atom_list, is_cartesian_coord)
+        MyBond = Bond(atom_list[0], atom_list[1])
+        print(MyBond.get_id())
+        Vis3D(atom_list, [MyBond], is_cartesian_coord)
 
 
 MyObject = MainClass(path)

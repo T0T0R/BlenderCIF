@@ -1,6 +1,7 @@
 from crystal import Atom
 from crystal import Cell
 
+
 import math as m
 import numpy as np
 

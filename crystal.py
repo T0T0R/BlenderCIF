@@ -1,7 +1,6 @@
 import math as m
 import numpy as np
 
-from loadCIF import CIF
 
 class Atom:
     no = 0
