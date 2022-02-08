@@ -82,7 +82,7 @@ class Atom:
 
 
 class Cell:    
-    def __init__(self, My_CIF):
+    def __init__(self, My_CIF, include_hydrogens = True):
         self.__length_a, self.__length_b, self.__length_c = My_CIF.get_lengths()
         self.__angle_alpha, self.__angle_beta, self.__angle_gamma = My_CIF.get_angles()
         self.__equiv_pos = My_CIF.get_equiv_positions()
@@ -90,6 +90,8 @@ class Cell:
         
         self.__atom_list = []
         for i in range(len(My_CIF.get_atom_labels())):
+            if (not include_hydrogens) and My_CIF.get_atom_type_symbols()[i]=='H': # Skip hydrogen atoms
+                continue
             self.__atom_list.append( Atom([My_CIF.get_atoms_site_fract_x()[i], My_CIF.get_atoms_site_fract_y()[i], My_CIF.get_atoms_site_fract_z()[i]], My_CIF.get_atom_labels()[i], My_CIF.get_atom_type_symbols()[i] ) )
         
         self.__equiv_atoms_list = []    # The list that will store every real atom in the cell (including equivalent ones).

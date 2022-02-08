@@ -12,9 +12,9 @@ path = "./MIL-177-HT.cif"
 
 
 class MainClass:
-    def __init__(self, path):
+    def __init__(self, path, include_hydrogen=True):
         MyCIF = CIF(path)
-        self.__My_cell = Cell(MyCIF)
+        self.__My_cell = Cell(MyCIF, include_hydrogen)
         self.__bonds_list = []
         self.__polhedra_list = []
         self.__coordination_distance = 2.3
@@ -53,7 +53,7 @@ class MainClass:
         Vis3D(self.__My_cell.get_equiv_atom_list(), self.__bonds_list, self.__polhedra_list, is_cartesian_coord)
 
 
-MyObject = MainClass(path)
+MyObject = MainClass(path, include_hydrogen=True)
 MyObject.initialize_cell()
 MyObject.update_bonds(["C"],["O"])
 MyObject.update_bonds(["C"],["C"])
