@@ -3,6 +3,7 @@ from crystal import Cell
 from vect import vect3D as v
 from geom import Bond
 from geom import Polyhedron
+import threading
 
 
 import math as m
@@ -39,25 +40,63 @@ class Tools:
     
     
     @classmethod
-    def neighbors(cls, My_Cell, Central_atom, atoms_list, allowed_atom_types="all", max_dist = 2.0, nearest_atom=False):  # Gives a list of the nearest atoms based on a maximum distance.
+    def neighbors(cls, My_Cell, Central_atom, atoms_list, allowed_atom_types="all", max_dist = 2.0, nearest_atom=False, THREADING=False):  # Gives a list of the nearest atoms based on a maximum distance.
         maximum_dist = max_dist  # in Angstrom.
         max_dist_sq = m.pow(maximum_dist, 2.0)
+        
         neighbors_list = []
         
         central_position = Central_atom.get_cartesian_position()
-        
-        for Other_atom in atoms_list:
-            if Other_atom.get_id() == Central_atom.get_id():    # Avoiding the atom to evaluate itself.
-                continue
-            if not (allowed_atom_types=="all"):
-                if not Other_atom.get_atom_type() in allowed_atom_types:
+        if not THREADING:
+            
+            
+            for Other_atom in atoms_list:
+                if Other_atom.get_id() == Central_atom.get_id():    # Avoiding the atom to evaluate itself.
                     continue
-
-            repeated_other_atom_list = cls.calculate_neighbors_cells(My_Cell, Other_atom)
-
-            for repeated_other in repeated_other_atom_list:
-                if v.distance_sq(central_position, repeated_other.get_cartesian_position()) <= max_dist_sq:
-                    neighbors_list.append(repeated_other)
+                if not (allowed_atom_types=="all"):
+                    if not Other_atom.get_atom_type() in allowed_atom_types:
+                        continue
+    
+                repeated_other_atom_list = cls.calculate_neighbors_cells(My_Cell, Other_atom)
+    
+                for repeated_other in repeated_other_atom_list:
+                    if v.distance_sq(central_position, repeated_other.get_cartesian_position()) <= max_dist_sq:
+                        neighbors_list.append(repeated_other)
+        else:
+            class Neighbors_list_class:
+                def __init__(self):
+                    self.__list=[]
+                    self.__lock = threading.Lock()
+                
+                def add(self, item):
+                    self.__lock.acquire()
+                    self.__list.append(item)
+                    self.__lock.release()
+                
+                def get(self):
+                    return self.__list
+            
+            neighbors_list_class = Neighbors_list_class()
+                
+            def add_neighbors(My_Cell, central_position, Other_atom, neighbors_list_class, max_dist_sq):
+                repeated_other_atom_list = cls.calculate_neighbors_cells(My_Cell, Other_atom)
+                
+                for repeated_other in repeated_other_atom_list:
+                    if v.distance_sq(central_position, repeated_other.get_cartesian_position()) <= max_dist_sq:
+                        neighbors_list_class.add(repeated_other)                
+                    
+            for Other_atom in atoms_list:
+                if Other_atom.get_id() == Central_atom.get_id():    # Avoiding the atom to evaluate itself.
+                    continue
+                if not (allowed_atom_types=="all"):
+                    if not Other_atom.get_atom_type() in allowed_atom_types:
+                        continue
+            
+                threading.Thread(target=add_neighbors, args=(My_Cell, central_position, Other_atom, neighbors_list_class, max_dist_sq)).start()
+                
+            neighbors_list = neighbors_list_class.get()
+                
+            
         
         if nearest_atom:    # Sort the list by distance with central atom
             def d_sq(Other_atom):
@@ -71,9 +110,9 @@ class Tools:
 
 
     @classmethod
-    def calculate_bonds_for_one_atom(cls, My_Cell, Central_atom, allowed_atom_types="all", max_dist = 1.8):
+    def calculate_bonds_for_one_atom(cls, My_Cell, Central_atom, allowed_atom_types="all", max_dist = 1.8, m_threading=False):
         max_distance = max_dist
-        neighbors = cls.neighbors(My_Cell, Central_atom, My_Cell.get_equiv_atom_list(), allowed_atom_types, max_dist=max_distance)
+        neighbors = cls.neighbors(My_Cell, Central_atom, My_Cell.get_equiv_atom_list(), allowed_atom_types, max_dist=max_distance, THREADING=m_threading)
         bonds = []
 
         
@@ -87,7 +126,7 @@ class Tools:
     
 
     @classmethod
-    def calculate_bonds(cls, My_Cell, central_atom_types="all", allowed_atom_types="all", max_distance=1.8):
+    def calculate_bonds(cls, My_Cell, central_atom_types="all", allowed_atom_types="all", max_distance=1.8, THREADING=False):
         if central_atom_types == "all":
             central_atoms_list = My_Cell.get_equiv_atom_list()
         else:
@@ -95,7 +134,7 @@ class Tools:
         
         bonds = []
         for central_atom in central_atoms_list:
-            temp_bonds = cls.calculate_bonds_for_one_atom(My_Cell, central_atom, allowed_atom_types, max_dist=max_distance)
+            temp_bonds = cls.calculate_bonds_for_one_atom(My_Cell, central_atom, allowed_atom_types, max_dist=max_distance, m_threading=THREADING)
             bonds = [*bonds, *temp_bonds]
 
         return bonds
@@ -103,15 +142,15 @@ class Tools:
     
 
     @classmethod
-    def calculate_polyhedron_for_one_atom(cls, My_Cell, Central_atom, allowed_atom_types="all", max_dist = 2.5):
-        neighbors = cls.neighbors(My_Cell, Central_atom, My_Cell.get_equiv_atom_list(), allowed_atom_types, max_dist)
+    def calculate_polyhedron_for_one_atom(cls, My_Cell, Central_atom, allowed_atom_types="all", max_dist = 2.5, m_threading=False):
+        neighbors = cls.neighbors(My_Cell, Central_atom, My_Cell.get_equiv_atom_list(), allowed_atom_types, max_dist, THREADING=m_threading)
         if not len(neighbors)==0:
             return Polyhedron(Central_atom, neighbors)
         else:
             return None
     
     @classmethod
-    def calculate_polyhedra(cls, My_Cell, central_atom_types="all", allowed_atom_types="all", max_distance=2.5):
+    def calculate_polyhedra(cls, My_Cell, central_atom_types="all", allowed_atom_types="all", max_distance=2.5, THREADING=False):
         if central_atom_types == "all":
             central_atoms_list = My_Cell.get_equiv_atom_list()
         else:
@@ -119,7 +158,7 @@ class Tools:
         
         polyhedra = []
         for central_atom in central_atoms_list:
-            polyhedron = cls.calculate_polyhedron_for_one_atom(My_Cell, central_atom, allowed_atom_types, max_distance)
+            polyhedron = cls.calculate_polyhedron_for_one_atom(My_Cell, central_atom, allowed_atom_types, max_distance, m_threading=THREADING)
             if not polyhedron == None:
                 polyhedra.append(polyhedron)
 

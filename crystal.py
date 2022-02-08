@@ -1,5 +1,6 @@
 import math as m
 import numpy as np
+import threading
 
 
 class Atom:
@@ -22,6 +23,8 @@ class Atom:
         self.__equiv_positions_cart = []    # in cartesian coordinates
         self.__connected_to = []            # List of cartesians positions to which it is connected
         self.__fake_atom = False            # The atom is fake if it is a repetition outside of the cell of an existing atom
+        
+        #self.__lock = threading.Lock()
         
         Atom.no += 1
 
@@ -52,12 +55,14 @@ class Atom:
         self.__fake_atom = True
 
     def connect(self, other_atom):
+        #self.__lock.acquire()
         other_cart_pos = other_atom.get_cartesian_position()
         if all(not Atom.is_same_position(other_cart_pos, connection_pos) for connection_pos in self.__connected_to): # If the connection has never been made with this other position:
             self.__connected_to.append(other_cart_pos)
             return True
         else:   # If it has already been made:
             return False
+        #self.__lock.release()
         
     
     @staticmethod

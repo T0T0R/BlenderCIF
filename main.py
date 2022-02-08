@@ -28,13 +28,13 @@ class MainClass:
         self.__My_cell.fill_equiv_atoms()
     
 
-    def update_bonds(self, central_atom_types="all", allowed_atom_types="all"):
-        new_bonds = [*t.calculate_bonds(self.__My_cell, central_atom_types, allowed_atom_types)]
+    def update_bonds(self, central_atom_types="all", allowed_atom_types="all", m_threading=False):
+        new_bonds = [*t.calculate_bonds(self.__My_cell, central_atom_types, allowed_atom_types, THREADING=m_threading)]
         self.__bonds_list = [*self.__bonds_list, *new_bonds]
 
 
-    def update_polyhedra(self, central_atom_types="all", allowed_atom_types="all"):
-        new_polyhedra = [*t.calculate_polyhedra(self.__My_cell, central_atom_types, allowed_atom_types, max_distance=self.__coordination_distance)]
+    def update_polyhedra(self, central_atom_types="all", allowed_atom_types="all", m_threading=False):
+        new_polyhedra = [*t.calculate_polyhedra(self.__My_cell, central_atom_types, allowed_atom_types, max_distance=self.__coordination_distance, THREADING=m_threading)]
         self.__polhedra_list = [*self.__polhedra_list, *new_polyhedra]
         
     
@@ -54,12 +54,22 @@ class MainClass:
         #Vis3D(neighbors_list, [], polyhedra_list, is_cartesian_coord)
         Vis3D(self.__My_cell.get_equiv_atom_list(), self.__bonds_list, self.__polhedra_list, is_cartesian_coord)
 
+THREADING=False
 start = time.time()
 MyObject = MainClass(path, include_hydrogen=True)
 MyObject.initialize_cell()
-MyObject.update_bonds(["C"],["O"])
-MyObject.update_bonds(["C"],["C"])
-MyObject.update_polyhedra(["Ti"],["O"])
+MyObject.update_bonds(["C"],["O"], THREADING)
+MyObject.update_bonds(["C"],["C"], THREADING)
+MyObject.update_polyhedra(["Ti"],["O"], THREADING)
+print(time.time() - start)
+
+THREADING=True
+start = time.time()
+MyObject = MainClass(path, include_hydrogen=True)
+MyObject.initialize_cell()
+MyObject.update_bonds(["C"],["O"], THREADING)
+MyObject.update_bonds(["C"],["C"], THREADING)
+MyObject.update_polyhedra(["Ti"],["O"], THREADING)
 print(time.time() - start)
 
 MyObject.debug()
