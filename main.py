@@ -28,11 +28,13 @@ class MainClass:
         neighbors_list = t.neighbors(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0], self.__My_cell.get_equiv_atom_list(), max_dist = 2.3, nearest_atom=True)
         #bonds_list = t.calculate_bonds(self.__My_cell, central_atom_types=["Ti"], allowed_atom_types=["O"], max_distance=2.3)
 
-        MyPolyhedron = Polyhedron(self.__My_cell.get_equiv_atom_list()[0], neighbors_list)
+        #MyPolyhedron = t.calculate_polyhedron_for_one_atom(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0], ["O"])
+        polyhedra_list = t.calculate_polyhedra(self.__My_cell, central_atom_types=["Ti"], allowed_atom_types=["O"], max_distance=2.3)
+        
         #bonds_list = t.calculate_bonds(self.__My_cell, central_atom_types=["C"], allowed_atom_types=["O"])
         #bonds_list = [*bonds_list, *t.calculate_bonds(self.__My_cell, central_atom_types=["C"], allowed_atom_types=["C"])]
 
-        Vis3D(neighbors_list, [], [MyPolyhedron], is_cartesian_coord)
+        Vis3D(neighbors_list, [], polyhedra_list, is_cartesian_coord)
         #Vis3D(self.__My_cell.get_equiv_atom_list(), bonds_list, is_cartesian_coord)
 
 

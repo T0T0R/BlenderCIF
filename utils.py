@@ -1,16 +1,12 @@
-from re import M
 from crystal import Atom
 from crystal import Cell
 from vect import vect3D as v
 from geom import Bond
+from geom import Polyhedron
 
 
 import math as m
 import numpy as np
-
-
-
-
 
 
 class Tools:
@@ -18,17 +14,17 @@ class Tools:
     def calculate_neighbors_cells(cls, My_Cell, Central_atom): # Calculates the equivalent atoms of Atom in the 8 cells around the central one.
         atoms_list = [Central_atom]
 
-        fractional_moves = [[1,0,0], [0,1,0], [0,0,1],# [0,0,-1], [0,-1,0], [-1,0,0],
+        fractional_moves = [[1,0,0], [0,1,0], [0,0,1], [0,0,-1], [0,-1,0], [-1,0,0],
                             
-                            [1,1,0],# [1,-1,0], [-1,1,0], [-1,-1,0], 
+                            [1,1,0], [1,-1,0], [-1,1,0], [-1,-1,0], 
                             
-                            [1,1,1], [0,1,1],# [-1,1,1],
-                            [1,0,1],# [-1,0,1],
-                            #[1,-1,1], [0,-1,1], [-1,-1,1],
+                            [1,1,1], [0,1,1], [-1,1,1],
+                            [1,0,1], [-1,0,1],
+                            [1,-1,1], [0,-1,1], [-1,-1,1],
                             
-                            #[1,1,-1], [0,1,-1], [-1,1,-1],
-                            #[1,0,-1], [-1,0,-1],
-                            #[1,-1,-1], [0,-1,-1], [-1,-1,-1]
+                            [1,1,-1], [0,1,-1], [-1,1,-1],
+                            [1,0,-1], [-1,0,-1],
+                            [1,-1,-1], [0,-1,-1], [-1,-1,-1]
                             ]
 
         for move in fractional_moves:
@@ -103,3 +99,27 @@ class Tools:
             bonds = [*bonds, *temp_bonds]
 
         return bonds
+    
+
+    @classmethod
+    def calculate_polyhedron_for_one_atom(cls, My_Cell, Central_atom, allowed_atom_types="all", max_dist = 2.5):
+        neighbors = cls.neighbors(My_Cell, Central_atom, My_Cell.get_equiv_atom_list(), allowed_atom_types, max_dist)
+        if not len(neighbors)==0:
+            return Polyhedron(Central_atom, neighbors)
+        else:
+            return None
+    
+    @classmethod
+    def calculate_polyhedra(cls, My_Cell, central_atom_types="all", allowed_atom_types="all", max_distance=2.5):
+        if central_atom_types == "all":
+            central_atoms_list = My_Cell.get_equiv_atom_list()
+        else:
+            central_atoms_list = [atom for atom in My_Cell.get_equiv_atom_list() if atom.get_atom_type() in central_atom_types]
+        
+        polyhedra = []
+        for central_atom in central_atoms_list:
+            polyhedron = cls.calculate_polyhedron_for_one_atom(My_Cell, central_atom, allowed_atom_types, max_distance)
+            if not polyhedron == None:
+                polyhedra.append(polyhedron)
+
+        return polyhedra
