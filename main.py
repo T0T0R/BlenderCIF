@@ -1,12 +1,9 @@
-#from hashlib import new
 from loadCIF import CIF
 from crystal import Atom
 from crystal import Cell
 from test3D import Vis3D
 from vect import vect3D as v
 from utils import Tools as t
-from geom import Bond
-from geom import Polyhedron
 
 #import bpy
 import json
