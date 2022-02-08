@@ -1,5 +1,7 @@
 import math as m
 import numpy as np
+from scipy.spatial import ConvexHull
+#from scipy.spatial import HalfspaceIntersection
 
 from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
@@ -8,7 +10,7 @@ from crystal import Cell
 from crystal import Atom
 
 class Vis3D:
-    def __init__(self, atom_list, bonds_list=[], is_cartesian_coord=True):
+    def __init__(self, atom_list, bonds_list=[], polyhedra_list=[], is_cartesian_coord=True):
         fig = plt.figure()
         ax = plt.axes(projection='3d')  
         
@@ -47,6 +49,25 @@ class Vis3D:
         for bond in bonds_list:
             posA, posB = bond.get_positions()
             ax.plot3D([posA[0],posB[0]], [posA[1],posB[1]], [posA[2],posB[2]], 'black')
+        
+        for poly in polyhedra_list:
+            vertices = np.array(poly.get_vertices())
+            hull = ConvexHull(vertices)
+            triangles = []
+            for simplex in hull.simplices:
+                sq = [
+                    (vertices[simplex[0], 0], vertices[simplex[0], 1], vertices[simplex[0], 2]),
+                    (vertices[simplex[1], 0], vertices[simplex[1], 1], vertices[simplex[1], 2]),
+                    (vertices[simplex[2], 0], vertices[simplex[2], 1], vertices[simplex[2], 2])
+                    ]
+                triangles.append(sq)
+            for sq in triangles:
+                f = mplot3d.art3d.Poly3DCollection([sq])
+                f.set_edgecolor('0.8')
+                f.set_alpha(0.1)
+                ax.add_collection3d(f)
+                #ax.plot3D(vertices[simplex,0], vertices[simplex,1], vertices[simplex,2])
+            
         
         ax.set_xlabel("Axis X")
         ax.set_ylabel("Axis Y")
