@@ -7,6 +7,7 @@ from vect import vect3D as v
 
 class Bond:
     no = 0
+
     def __init__(self, Atom_a, Atom_b):
         self.__connected_atoms = [Atom_a, Atom_b]
         self.__connected_positions = [Atom_a.get_cartesian_position(), Atom_b.get_cartesian_position()]
@@ -25,6 +26,41 @@ class Bond:
         return self.__connected_id
     def get_length(self):
         return self.__length
+    
+
+    @staticmethod
+    def is_same_bond(bond1, bond2):
+        position_error = 0.1
+        atom_1A, atom_1B = bond1.get_atoms()
+        atom_2A, atom_2B = bond2.get_atoms()
+
+        # With a precision of 0.1 Angstrom
+        same_atoms_config_1 = Atom.is_same_position(atom_1A.get_cartesian_position(), atom_2A.get_cartesian_position(), position_error) and Atom.is_same_position(atom_1B.get_cartesian_position(), atom_2B.get_cartesian_position(), position_error)
+        same_atoms_config_2 = Atom.is_same_position(atom_1A.get_cartesian_position(), atom_2B.get_cartesian_position(), position_error) and Atom.is_same_position(atom_1B.get_cartesian_position(), atom_2A.get_cartesian_position(), position_error)
+
+        return same_atoms_config_1 or same_atoms_config_2
+    
+
+
+    @staticmethod
+    def remove_duplicates(bonds_list):
+
+        def contains(bonds_table, bond, bond_index):        # Gives the index of the 
+            output = False
+            for i in range(bond_index): # Evaluate bonds before the index of the reference
+                if Bond.is_same_bond(bond, bonds_table[i]):
+                    return True
+
+            return output
+
+        # The bond_list object is modified while searching through it, so it is better to build a new list
+        output_list = []
+        for i in range(len(bonds_list)):
+            bond = bonds_list[i]
+            if not contains(bonds_list, bond, i):
+                output_list.append(bond)
+        #return [bond for bond in bonds_list if not contains(bonds_list, bond)]
+        return output_list
 
 
 

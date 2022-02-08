@@ -1,4 +1,5 @@
 from loadCIF import CIF
+from crystal import Atom
 from crystal import Cell
 from test3D import Vis3D
 from vect import vect3D as v
@@ -25,7 +26,7 @@ class MainClass:
     
     def debug(self, is_cartesian_coord=True):
         
-        neighbors_list = t.neighbors(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0], self.__My_cell.get_equiv_atom_list(), max_dist = 2.3, nearest_atom=True)
+        #neighbors_list = t.neighbors(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0], self.__My_cell.get_equiv_atom_list(), max_dist = 2.3, nearest_atom=True)
         #bonds_list = t.calculate_bonds(self.__My_cell, central_atom_types=["Ti"], allowed_atom_types=["O"], max_distance=2.3)
 
         #MyPolyhedron = t.calculate_polyhedron_for_one_atom(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0], ["O"])
@@ -34,8 +35,18 @@ class MainClass:
         #bonds_list = t.calculate_bonds(self.__My_cell, central_atom_types=["C"], allowed_atom_types=["O"])
         #bonds_list = [*bonds_list, *t.calculate_bonds(self.__My_cell, central_atom_types=["C"], allowed_atom_types=["C"])]
 
-        Vis3D(neighbors_list, [], polyhedra_list, is_cartesian_coord)
-        #Vis3D(self.__My_cell.get_equiv_atom_list(), bonds_list, is_cartesian_coord)
+        atomA = Atom()
+        atomB = Atom()
+        atomC = Atom()
+        atomB.set_cartesian_position([1.0, 0.0, 0.0])
+        atomC.set_cartesian_position([1.0, 1.0, 0.0])
+        bond1 = Bond(atomA, atomB)
+        bond2 = Bond(atomA, atomB)
+        bonds_list = [bond1, bond2]
+        stripped_bonds_list = Bond.remove_duplicates(bonds_list)
+
+        #Vis3D(neighbors_list, [], polyhedra_list, is_cartesian_coord)
+        Vis3D(self.__My_cell.get_equiv_atom_list(), stripped_bonds_list, polyhedra_list, is_cartesian_coord)
 
 
 MyObject = MainClass(path)
