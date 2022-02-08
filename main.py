@@ -1,3 +1,4 @@
+from hashlib import new
 from loadCIF import CIF
 from crystal import Atom
 from crystal import Cell
@@ -17,11 +18,25 @@ class MainClass:
     def __init__(self, path):
         MyCIF = CIF(path)
         self.__My_cell = Cell(MyCIF)
+        self.__bonds_list = []
+        self.__polhedra_list = []
+        self.__coordination_distance = 2.3
+
 
     def initialize_cell(self):
         self.__My_cell.fill_cell()
         self.__My_cell.fract_coords_to_cartesian_coords()
         self.__My_cell.fill_equiv_atoms()
+    
+
+    def update_bonds(self, central_atom_types="all", allowed_atom_types="all"):
+        new_bonds = [*t.calculate_bonds(self.__My_cell, central_atom_types, allowed_atom_types)]
+        self.__bonds_list = [*self.__bonds_list, *new_bonds]
+
+
+    def update_polyhedra(self, central_atom_types="all", allowed_atom_types="all"):
+        new_polyhedra = [*t.calculate_polyhedra(self.__My_cell, central_atom_types, allowed_atom_types, max_distance=self.__coordination_distance)]
+        self.__polhedra_list = [*self.__polhedra_list, *new_polyhedra]
         
     
     def debug(self, is_cartesian_coord=True):
@@ -30,27 +45,22 @@ class MainClass:
         #bonds_list = t.calculate_bonds(self.__My_cell, central_atom_types=["Ti"], allowed_atom_types=["O"], max_distance=2.3)
 
         #MyPolyhedron = t.calculate_polyhedron_for_one_atom(self.__My_cell, self.__My_cell.get_equiv_atom_list()[0], ["O"])
-        polyhedra_list = t.calculate_polyhedra(self.__My_cell, central_atom_types=["Ti"], allowed_atom_types=["O"], max_distance=2.3)
+        #polyhedra_list = t.calculate_polyhedra(self.__My_cell, central_atom_types=["Ti"], allowed_atom_types=["O"], max_distance=self.__coordination_distance)
         
         #bonds_list = t.calculate_bonds(self.__My_cell, central_atom_types=["C"], allowed_atom_types=["O"])
         #bonds_list = [*bonds_list, *t.calculate_bonds(self.__My_cell, central_atom_types=["C"], allowed_atom_types=["C"])]
 
-        atomA = Atom()
-        atomB = Atom()
-        atomC = Atom()
-        atomB.set_cartesian_position([1.0, 0.0, 0.0])
-        atomC.set_cartesian_position([1.0, 1.0, 0.0])
-        bond1 = Bond(atomA, atomB)
-        bond2 = Bond(atomA, atomB)
-        bonds_list = [bond1, bond2]
-        stripped_bonds_list = Bond.remove_duplicates(bonds_list)
+        #stripped_bonds_list = Bond.remove_duplicates(bonds_list)
 
         #Vis3D(neighbors_list, [], polyhedra_list, is_cartesian_coord)
-        Vis3D(self.__My_cell.get_equiv_atom_list(), stripped_bonds_list, polyhedra_list, is_cartesian_coord)
+        Vis3D(self.__My_cell.get_equiv_atom_list(), self.__bonds_list, self.__polhedra_list, is_cartesian_coord)
 
 
 MyObject = MainClass(path)
 MyObject.initialize_cell()
+MyObject.update_bonds(["C"],["O"])
+MyObject.update_bonds(["C"],["C"])
+MyObject.update_polyhedra(["Ti"],["O"])
 MyObject.debug()
 
 print("done.")
