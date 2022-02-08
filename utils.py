@@ -1,3 +1,4 @@
+from re import M
 from crystal import Atom
 from crystal import Cell
 from vect import vect3D as v
@@ -17,17 +18,18 @@ class Tools:
     def calculate_neighbors_cells(cls, My_Cell, Central_atom): # Calculates the equivalent atoms of Atom in the 8 cells around the central one.
         atoms_list = [Central_atom]
 
-        fractional_moves = [[1,0,0], [-1,0,0], [0,1,0], [0,-1,0], [0,0,1], [0,0,-1],
+        fractional_moves = [[1,0,0], [0,1,0], [0,0,1],# [0,0,-1], [0,-1,0], [-1,0,0],
                             
-                            [1,1,0], [1,-1,0], [-1,1,0], [-1,-1,0], 
+                            [1,1,0],# [1,-1,0], [-1,1,0], [-1,-1,0], 
                             
-                            [1,1,1], [0,1,1], [-1,1,1],
-                            [1,0,1], [-1,0,1],
-                            [1,-1,1], [0,-1,1], [-1,-1,1],
+                            [1,1,1], [0,1,1],# [-1,1,1],
+                            [1,0,1],# [-1,0,1],
+                            #[1,-1,1], [0,-1,1], [-1,-1,1],
                             
-                            [1,1,-1], [0,1,-1], [-1,1,-1],
-                            [1,0,-1], [-1,0,-1],
-                            [1,-1,-1], [0,-1,-1], [-1,-1,-1]]
+                            #[1,1,-1], [0,1,-1], [-1,1,-1],
+                            #[1,0,-1], [-1,0,-1],
+                            #[1,-1,-1], [0,-1,-1], [-1,-1,-1]
+                            ]
 
         for move in fractional_moves:
             Temp_atom = Atom(label=Central_atom.get_label(), atom_type=Central_atom.get_atom_type())
@@ -41,8 +43,8 @@ class Tools:
     
     
     @classmethod
-    def neighbors(cls, My_Cell, Central_atom, atoms_list, allowed_atoms=None, nearest_atom=False):  # Gives a list of the nearest atoms based on a maximum distance.
-        maximum_dist = 3.0  # in Angstrom.
+    def neighbors(cls, My_Cell, Central_atom, atoms_list, allowed_atom_types=None, max_dist = 2.0, nearest_atom=False):  # Gives a list of the nearest atoms based on a maximum distance.
+        maximum_dist = max_dist  # in Angstrom.
         max_dist_sq = m.pow(maximum_dist, 2.0)
         neighbors_list = []
         
@@ -51,8 +53,8 @@ class Tools:
         for Other_atom in atoms_list:
             if Other_atom.get_id() == Central_atom.get_id():    # Avoiding the atom to evaluate itself.
                 continue
-            if not (allowed_atoms==None):
-                if not Other_atom.get_atom_type() in allowed_atoms:
+            if not (allowed_atom_types==None):
+                if not Other_atom.get_atom_type() in allowed_atom_types:
                     continue
 
             repeated_other_atom_list = cls.calculate_neighbors_cells(My_Cell, Other_atom)
@@ -73,8 +75,9 @@ class Tools:
 
 
     @classmethod
-    def calculate_bonds_for_one_atom(cls, My_Cell, Central_atom, allowed_atoms=None):
-        neighbors = cls.neighbors(My_Cell, Central_atom, My_Cell.get_equiv_atom_list(), allowed_atoms)
+    def calculate_bonds_for_one_atom(cls, My_Cell, Central_atom, allowed_atom_types=None, max_dist = 1.8):
+        max_distance = max_dist
+        neighbors = cls.neighbors(My_Cell, Central_atom, My_Cell.get_equiv_atom_list(), allowed_atom_types, max_dist=max_distance)
         bonds = []
 
         
@@ -83,5 +86,20 @@ class Tools:
             conn_b = other_atom.connect(Central_atom)
             if conn_a and conn_b: # If both atoms are not already connected
                     bonds.append(Bond(Central_atom, other_atom))
+
+        return bonds
+    
+
+    @classmethod
+    def calculate_bonds(cls, My_Cell, central_atom_types=None, allowed_atom_types=None, max_distance=1.8):
+        if central_atom_types == None:
+            central_atoms_list = My_Cell.get_equiv_atom_list()
+        else:
+            central_atoms_list = [atom for atom in My_Cell.get_equiv_atom_list() if atom.get_atom_type() in central_atom_types]
+        
+        bonds = []
+        for central_atom in central_atoms_list:
+            temp_bonds = cls.calculate_bonds_for_one_atom(My_Cell, central_atom, allowed_atom_types, max_dist=max_distance)
+            bonds = [*bonds, *temp_bonds]
 
         return bonds
