@@ -1,4 +1,4 @@
-from hashlib import new
+#from hashlib import new
 from loadCIF import CIF
 from crystal import Atom
 from crystal import Cell
