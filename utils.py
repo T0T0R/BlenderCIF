@@ -43,7 +43,7 @@ class Tools:
     
     
     @classmethod
-    def neighbors(cls, My_Cell, Central_atom, atoms_list, allowed_atom_types=None, max_dist = 2.0, nearest_atom=False):  # Gives a list of the nearest atoms based on a maximum distance.
+    def neighbors(cls, My_Cell, Central_atom, atoms_list, allowed_atom_types="all", max_dist = 2.0, nearest_atom=False):  # Gives a list of the nearest atoms based on a maximum distance.
         maximum_dist = max_dist  # in Angstrom.
         max_dist_sq = m.pow(maximum_dist, 2.0)
         neighbors_list = []
@@ -53,7 +53,7 @@ class Tools:
         for Other_atom in atoms_list:
             if Other_atom.get_id() == Central_atom.get_id():    # Avoiding the atom to evaluate itself.
                 continue
-            if not (allowed_atom_types==None):
+            if not (allowed_atom_types=="all"):
                 if not Other_atom.get_atom_type() in allowed_atom_types:
                     continue
 
@@ -75,7 +75,7 @@ class Tools:
 
 
     @classmethod
-    def calculate_bonds_for_one_atom(cls, My_Cell, Central_atom, allowed_atom_types=None, max_dist = 1.8):
+    def calculate_bonds_for_one_atom(cls, My_Cell, Central_atom, allowed_atom_types="all", max_dist = 1.8):
         max_distance = max_dist
         neighbors = cls.neighbors(My_Cell, Central_atom, My_Cell.get_equiv_atom_list(), allowed_atom_types, max_dist=max_distance)
         bonds = []
@@ -91,8 +91,8 @@ class Tools:
     
 
     @classmethod
-    def calculate_bonds(cls, My_Cell, central_atom_types=None, allowed_atom_types=None, max_distance=1.8):
-        if central_atom_types == None:
+    def calculate_bonds(cls, My_Cell, central_atom_types="all", allowed_atom_types="all", max_distance=1.8):
+        if central_atom_types == "all":
             central_atoms_list = My_Cell.get_equiv_atom_list()
         else:
             central_atoms_list = [atom for atom in My_Cell.get_equiv_atom_list() if atom.get_atom_type() in central_atom_types]

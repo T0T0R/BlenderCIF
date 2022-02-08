@@ -1,5 +1,6 @@
 import math as m
 import numpy as np
+from scipy import spatial
 
 from crystal import Atom
 from crystal import Cell
