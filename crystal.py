@@ -231,3 +231,13 @@ class Cell:
                 temp_atom = Atom(equiv_position_cart, atom.get_label(), atom.get_atom_type())
                 temp_atom.set_cartesian_position(equiv_position_cart)
                 self.__equiv_atoms_list.append(temp_atom)
+    
+
+    def get_corners(self):
+        alpha = self.__angle_alpha
+        beta = self.__angle_beta
+        gamma = self.__angle_gamma
+        a,b,c = self.__length_a,self.__length_b,self.__length_c
+        fract_coordinates = [[0,0,0], [1,0,0], [1,1,0], [0,1,0], [0,0,1], [1,0,1], [1,1,1], [0,1,1]]
+        corners_cart_coordinates = [Cell.fract_coord_to_cartesian_coord(a,b,c,alpha,beta,gamma,fract_coord) for fract_coord in fract_coordinates]
+        return corners_cart_coordinates

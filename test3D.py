@@ -10,7 +10,7 @@ from crystal import Cell
 from crystal import Atom
 
 class Vis3D:
-    def __init__(self, atom_list, bonds_list=[], polyhedra_list=[], is_cartesian_coord=True):
+    def __init__(self, atom_list, bonds_list=[], polyhedra_list=[], corners_list=[], is_cartesian_coord=True):
         fig = plt.figure()
         ax = plt.axes(projection='3d')  
         
@@ -67,7 +67,23 @@ class Vis3D:
                 f.set_alpha(0.1)
                 ax.add_collection3d(f)
                 #ax.plot3D(vertices[simplex,0], vertices[simplex,1], vertices[simplex,2])
-            
+
+        vertices = np.array(corners_list)
+        hull = ConvexHull(vertices)
+        triangles = []
+        for simplex in hull.simplices:
+            sq = [
+                (vertices[simplex[0], 0], vertices[simplex[0], 1], vertices[simplex[0], 2]),
+                (vertices[simplex[1], 0], vertices[simplex[1], 1], vertices[simplex[1], 2]),
+                (vertices[simplex[2], 0], vertices[simplex[2], 1], vertices[simplex[2], 2])
+                ]
+            triangles.append(sq)
+        for sq in triangles:
+            f = mplot3d.art3d.Poly3DCollection([sq])
+            f.set_edgecolor('1')
+            f.set_alpha(0.0)
+            ax.add_collection3d(f)
+
         
         ax.set_xlabel("Axis X")
         ax.set_ylabel("Axis Y")
