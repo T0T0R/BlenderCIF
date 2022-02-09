@@ -39,7 +39,8 @@ class Tools:
     
     
     @classmethod
-    def neighbors(cls, My_Cell, Central_atom, atoms_list, allowed_atom_types="all", max_dist = 2.0, nearest_atom=False):  # Gives a list of the nearest atoms based on a maximum distance.
+    def neighbors(cls, My_Cell, Central_atom, atoms_list, allowed_atom_types="all", max_dist = 2.0, nearest_atom=False, OPTI=True):  # Gives a list of the nearest atoms based on a maximum distance.
+        max_neighbors = 6
         maximum_dist = max_dist  # in Angstrom.
         max_dist_sq = m.pow(maximum_dist, 2.0)
         neighbors_list = []
@@ -47,6 +48,10 @@ class Tools:
         central_position = Central_atom.get_cartesian_position()
         
         for Other_atom in atoms_list:
+            #if OPTI and len(neighbors_list) >= max_neighbors:    # Stop the searching when the limit is reached
+                #break
+
+
             if Other_atom.get_id() == Central_atom.get_id():    # Avoiding the atom to evaluate itself.
                 continue
             if not (allowed_atom_types=="all"):
@@ -71,13 +76,17 @@ class Tools:
 
 
     @classmethod
-    def calculate_bonds_for_one_atom(cls, My_Cell, Central_atom, allowed_atom_types="all", max_dist = 1.8):
+    def calculate_bonds_for_one_atom(cls, My_Cell, Central_atom, allowed_atom_types="all", max_dist = 1.8, opti=True):
+        max_bonds = 6
         max_distance = max_dist
-        neighbors = cls.neighbors(My_Cell, Central_atom, My_Cell.get_equiv_atom_list(), allowed_atom_types, max_dist=max_distance)
+        neighbors = cls.neighbors(My_Cell, Central_atom, My_Cell.get_equiv_atom_list(), allowed_atom_types, max_dist=max_distance, OPTI=opti)
         bonds = []
 
         
         for other_atom in neighbors:
+            if opti and len(bonds) >= max_bonds:
+                break
+
             conn_a = Central_atom.connect(other_atom)
             conn_b = other_atom.connect(Central_atom)
             if conn_a and conn_b: # If both atoms are not already connected
@@ -87,7 +96,7 @@ class Tools:
     
 
     @classmethod
-    def calculate_bonds(cls, My_Cell, central_atom_types="all", allowed_atom_types="all", max_distance=1.8):
+    def calculate_bonds(cls, My_Cell, central_atom_types="all", allowed_atom_types="all", max_distance=1.8, opti=True):
         if central_atom_types == "all":
             central_atoms_list = My_Cell.get_equiv_atom_list()
         else:
@@ -95,7 +104,7 @@ class Tools:
         
         bonds = []
         for central_atom in central_atoms_list:
-            temp_bonds = cls.calculate_bonds_for_one_atom(My_Cell, central_atom, allowed_atom_types, max_dist=max_distance)
+            temp_bonds = cls.calculate_bonds_for_one_atom(My_Cell, central_atom, allowed_atom_types, max_distance, opti)
             bonds = [*bonds, *temp_bonds]
 
         return bonds
@@ -103,15 +112,15 @@ class Tools:
     
 
     @classmethod
-    def calculate_polyhedron_for_one_atom(cls, My_Cell, Central_atom, allowed_atom_types="all", max_dist = 2.5):
-        neighbors = cls.neighbors(My_Cell, Central_atom, My_Cell.get_equiv_atom_list(), allowed_atom_types, max_dist)
+    def calculate_polyhedron_for_one_atom(cls, My_Cell, Central_atom, allowed_atom_types="all", max_dist = 2.5, opti=True):
+        neighbors = cls.neighbors(My_Cell, Central_atom, My_Cell.get_equiv_atom_list(), allowed_atom_types, max_dist, opti)
         if not len(neighbors)==0:
             return Polyhedron(Central_atom, neighbors)
         else:
             return None
     
     @classmethod
-    def calculate_polyhedra(cls, My_Cell, central_atom_types="all", allowed_atom_types="all", max_distance=2.5):
+    def calculate_polyhedra(cls, My_Cell, central_atom_types="all", allowed_atom_types="all", max_distance=2.5, opti=True):
         if central_atom_types == "all":
             central_atoms_list = My_Cell.get_equiv_atom_list()
         else:
@@ -119,7 +128,7 @@ class Tools:
         
         polyhedra = []
         for central_atom in central_atoms_list:
-            polyhedron = cls.calculate_polyhedron_for_one_atom(My_Cell, central_atom, allowed_atom_types, max_distance)
+            polyhedron = cls.calculate_polyhedron_for_one_atom(My_Cell, central_atom, allowed_atom_types, max_distance, opti)
             if not polyhedron == None:
                 polyhedra.append(polyhedron)
 

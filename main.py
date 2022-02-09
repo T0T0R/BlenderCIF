@@ -13,12 +13,13 @@ path = "./MIL-177-HT.cif"
 
 
 class MainClass:
-    def __init__(self, path, include_hydrogen=True):
+    def __init__(self, path, include_hydrogen=True, is_opti=True):
         MyCIF = CIF(path)
         self.__My_cell = Cell(MyCIF, include_hydrogen)
         self.__bonds_list = []
         self.__polhedra_list = []
         self.__coordination_distance = 2.3
+        self.__is_opti = is_opti
 
 
     def initialize_cell(self):
@@ -28,12 +29,12 @@ class MainClass:
     
 
     def update_bonds(self, central_atom_types="all", allowed_atom_types="all"):
-        new_bonds = [*t.calculate_bonds(self.__My_cell, central_atom_types, allowed_atom_types)]
+        new_bonds = [*t.calculate_bonds(self.__My_cell, central_atom_types, allowed_atom_types, opti=self.__is_opti)]
         self.__bonds_list = [*self.__bonds_list, *new_bonds]
 
 
     def update_polyhedra(self, central_atom_types="all", allowed_atom_types="all"):
-        new_polyhedra = [*t.calculate_polyhedra(self.__My_cell, central_atom_types, allowed_atom_types, max_distance=self.__coordination_distance)]
+        new_polyhedra = [*t.calculate_polyhedra(self.__My_cell, central_atom_types, allowed_atom_types, self.__coordination_distance, opti=self.__is_opti)]
         self.__polhedra_list = [*self.__polhedra_list, *new_polyhedra]
         
     
@@ -56,7 +57,7 @@ class MainClass:
 
 OPTI = False
 start = time.time()
-MyObject = MainClass(path, include_hydrogen=True)
+MyObject = MainClass(path, True, OPTI)
 MyObject.initialize_cell()
 MyObject.update_bonds(["C"],["O"])
 MyObject.update_bonds(["C"],["C"])
@@ -65,7 +66,7 @@ print(time.time() - start)
 
 OPTI = True
 start = time.time()
-MyObject = MainClass(path, include_hydrogen=True)
+MyObject = MainClass(path, True, OPTI)
 MyObject.initialize_cell()
 MyObject.update_bonds(["C"],["O"])
 MyObject.update_bonds(["C"],["C"])
