@@ -233,14 +233,38 @@ class Cell:
                 self.__equiv_atoms_list.append(temp_atom)
     
 
-    def get_borders(self):
+    def get_corners(self, fract_coordinates):
         alpha = self.__angle_alpha
         beta = self.__angle_beta
         gamma = self.__angle_gamma
         a,b,c = self.__length_a,self.__length_b,self.__length_c
-        fract_coordinates = [[0,0,0], [1,0,0], [1,1,0], [0,1,0], [0,0,1], [1,0,1], [1,1,1], [0,1,1]]
         corners = [Cell.fract_coord_to_cartesian_coord(a,b,c,alpha,beta,gamma,fract_coord) for fract_coord in fract_coordinates]
+        return corners
+    
+
+    def get_borders(self):
+        fract_coordinates = [[0,0,0], [1,0,0], [1,1,0], [0,1,0], [0,0,1], [1,0,1], [1,1,1], [0,1,1]]
+        corners = self.get_corners(fract_coordinates)
         borders = [[corners[0],corners[1]] , [corners[1],corners[2]] , [corners[2],corners[3]] , [corners[3],corners[0]],
                     [corners[4],corners[5]] , [corners[5],corners[6]] , [corners[6],corners[7]] , [corners[7],corners[4]],
                     [corners[0],corners[4]] , [corners[1],corners[5]] , [corners[2],corners[6]] , [corners[3],corners[7]]]
         return borders
+
+
+    def get_cell_offsets(self):
+        fract_coordinates = [[0,0,0], [1,0,0], [1,1,0], [0,1,0], [0,0,1], [1,0,1], [1,1,1], [0,1,1]]
+        #---------------------- 0 ------ 1 ------ 2 ------ 3 ------ 4 ------ 5 ------ 6 ------ 7 ------
+        corners = self.get_corners(fract_coordinates)
+        c=corners
+        x_dot_product = c[6][0]*c[1][0] + c[6][1]*c[1][1] + c[6][2]*c[1][2]
+        y_dot_product = c[6][0]*c[3][0] + c[6][1]*c[3][1] + c[6][2]*c[3][2]
+        z_dot_product = c[6][0]*c[4][0] + c[6][1]*c[4][1] + c[6][2]*c[4][2]
+        x_offset = x_dot_product/self.__length_a - self.__length_a
+        y_offset = y_dot_product/self.__length_b - self.__length_b
+        z_offset = z_dot_product/self.__length_c - self.__length_c
+
+        X_offset = x_offset * c[1][0]/self.__length_a
+        Y_offset = y_offset * c[3][1]/self.__length_b
+        Z_offset = z_offset * c[4][2]/self.__length_c
+
+        return(self.__length_a, self.__length_b, self.__length_c, X_offset, Y_offset, Z_offset)

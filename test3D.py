@@ -10,7 +10,7 @@ from crystal import Cell
 from crystal import Atom
 
 class Vis3D:
-    def __init__(self, atom_list, bonds_list=[], polyhedra_list=[], borders_list=[], is_cartesian_coord=True):
+    def __init__(self, atom_list, bonds_list=[], polyhedra_list=[], borders_list=[], lengths_offsets=[], is_cartesian_coord=True):
         fig = plt.figure()
         ax = plt.axes(projection='3d')  
         
@@ -70,8 +70,11 @@ class Vis3D:
 
         
         for border in borders_list:
+            a, b, c, x_offset, y_offset, z_offset = lengths_offsets
             posA, posB = border[0], border[1]
             ax.plot3D([posA[0],posB[0]], [posA[1],posB[1]], [posA[2],posB[2]], 'black')
+            ax.plot3D([posA[0]+x_offset,posB[0]+x_offset], [posA[1]+y_offset,posB[1]+y_offset], [posA[2]+z_offset,posB[2]+z_offset], 'black')
+
 
         
         ax.set_xlabel("Axis X")
