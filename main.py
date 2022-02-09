@@ -4,6 +4,7 @@ from crystal import Cell
 from test3D import Vis3D
 from vect import vect3D as v
 from utils import Tools as t
+import time
 
 #import bpy
 import json
@@ -53,11 +54,24 @@ class MainClass:
         Vis3D(self.__My_cell.get_equiv_atom_list(), self.__bonds_list, self.__polhedra_list, is_cartesian_coord)
 
 
+OPTI = False
+start = time.time()
 MyObject = MainClass(path, include_hydrogen=True)
 MyObject.initialize_cell()
 MyObject.update_bonds(["C"],["O"])
 MyObject.update_bonds(["C"],["C"])
 MyObject.update_polyhedra(["Ti"],["O"])
+print(time.time() - start)
+
+OPTI = True
+start = time.time()
+MyObject = MainClass(path, include_hydrogen=True)
+MyObject.initialize_cell()
+MyObject.update_bonds(["C"],["O"])
+MyObject.update_bonds(["C"],["C"])
+MyObject.update_polyhedra(["Ti"],["O"])
+print(time.time() - start)
 MyObject.debug()
+
 
 print("done.")
