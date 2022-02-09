@@ -233,11 +233,14 @@ class Cell:
                 self.__equiv_atoms_list.append(temp_atom)
     
 
-    def get_corners(self):
+    def get_borders(self):
         alpha = self.__angle_alpha
         beta = self.__angle_beta
         gamma = self.__angle_gamma
         a,b,c = self.__length_a,self.__length_b,self.__length_c
         fract_coordinates = [[0,0,0], [1,0,0], [1,1,0], [0,1,0], [0,0,1], [1,0,1], [1,1,1], [0,1,1]]
-        corners_cart_coordinates = [Cell.fract_coord_to_cartesian_coord(a,b,c,alpha,beta,gamma,fract_coord) for fract_coord in fract_coordinates]
-        return corners_cart_coordinates
+        corners = [Cell.fract_coord_to_cartesian_coord(a,b,c,alpha,beta,gamma,fract_coord) for fract_coord in fract_coordinates]
+        borders = [[corners[0],corners[1]] , [corners[1],corners[2]] , [corners[2],corners[3]] , [corners[3],corners[0]],
+                    [corners[4],corners[5]] , [corners[5],corners[6]] , [corners[6],corners[7]] , [corners[7],corners[4]],
+                    [corners[0],corners[4]] , [corners[1],corners[5]] , [corners[2],corners[6]] , [corners[3],corners[7]]]
+        return borders

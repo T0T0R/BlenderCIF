@@ -50,7 +50,7 @@ class MainClass:
         #stripped_bonds_list = Bond.remove_duplicates(bonds_list)
 
         #Vis3D(neighbors_list, [], polyhedra_list, is_cartesian_coord)
-        Vis3D(self.__My_cell.get_equiv_atom_list(), self.__bonds_list, self.__polhedra_list, self.__My_cell.get_corners(), is_cartesian_coord)
+        Vis3D(self.__My_cell.get_equiv_atom_list(), self.__bonds_list, self.__polhedra_list, self.__My_cell.get_borders(), is_cartesian_coord)
 
 
 MyObject = MainClass(path, include_hydrogen=True)

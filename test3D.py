@@ -10,7 +10,7 @@ from crystal import Cell
 from crystal import Atom
 
 class Vis3D:
-    def __init__(self, atom_list, bonds_list=[], polyhedra_list=[], corners_list=[], is_cartesian_coord=True):
+    def __init__(self, atom_list, bonds_list=[], polyhedra_list=[], borders_list=[], is_cartesian_coord=True):
         fig = plt.figure()
         ax = plt.axes(projection='3d')  
         
@@ -68,21 +68,10 @@ class Vis3D:
                 ax.add_collection3d(f)
                 #ax.plot3D(vertices[simplex,0], vertices[simplex,1], vertices[simplex,2])
 
-        vertices = np.array(corners_list)
-        hull = ConvexHull(vertices)
-        triangles = []
-        for simplex in hull.simplices:
-            sq = [
-                (vertices[simplex[0], 0], vertices[simplex[0], 1], vertices[simplex[0], 2]),
-                (vertices[simplex[1], 0], vertices[simplex[1], 1], vertices[simplex[1], 2]),
-                (vertices[simplex[2], 0], vertices[simplex[2], 1], vertices[simplex[2], 2])
-                ]
-            triangles.append(sq)
-        for sq in triangles:
-            f = mplot3d.art3d.Poly3DCollection([sq])
-            f.set_edgecolor('1')
-            f.set_alpha(0.0)
-            ax.add_collection3d(f)
+        
+        for border in borders_list:
+            posA, posB = border[0], border[1]
+            ax.plot3D([posA[0],posB[0]], [posA[1],posB[1]], [posA[2],posB[2]], 'black')
 
         
         ax.set_xlabel("Axis X")
