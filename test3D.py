@@ -73,7 +73,7 @@ class Vis3D:
             a, b, c, x_offset, y_offset, z_offset = lengths_offsets
             posA, posB = border[0], border[1]
             ax.plot3D([posA[0],posB[0]], [posA[1],posB[1]], [posA[2],posB[2]], 'black')
-            ax.plot3D([posA[0]+x_offset,posB[0]+x_offset], [posA[1]+y_offset,posB[1]+y_offset], [posA[2]+z_offset,posB[2]+z_offset], 'black')
+            #ax.plot3D([posA[0]+x_offset,posB[0]+x_offset], [posA[1]+y_offset,posB[1]+y_offset], [posA[2]+z_offset,posB[2]+z_offset], 'black')
 
 
         
