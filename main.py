@@ -57,8 +57,8 @@ class MainClass:
 MyObject = MainClass(path, include_hydrogen=True)
 MyObject.initialize_cell()
 MyObject.update_bonds(["C"],["O"])
-MyObject.update_bonds(["C"],["C"])
-MyObject.update_polyhedra(["Ti"],["O"])
+#MyObject.update_bonds(["C"],["C"])
+#MyObject.update_polyhedra(["Ti"],["O"])
 
 MyObject.debug()
 

@@ -7,7 +7,7 @@ class Atom:
     position_error = 0.01 # Two positions with less than 1% difference are the same.
     
     
-    def __init__(self, location=[0.0, 0.0, 0.0], label="X", atom_type="Dummy"):
+    def __init__(self, location=[0.0, 0.0, 0.0], label="X", atom_type="X"):
         self.__location = [a % 1.0 for a in location]   # Fractional coordinates
         self.__cartesian_position = [0.0, 0.0, 0.0]
         
