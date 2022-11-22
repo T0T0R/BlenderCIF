@@ -21,9 +21,9 @@
 import math as m
 import numpy as np
 
-from crystal import Atom
-from crystal import Cell
-from vect import vect3D as v
+from io_mesh_atomic_cif.crystal import Atom
+from io_mesh_atomic_cif.crystal import Cell
+from io_mesh_atomic_cif.vect import vect3D as v
 
 class Bond:
     no = 0
@@ -48,6 +48,10 @@ class Bond:
         return self.__length
     
 
+    def check(self):    # If a bond does not connects two same positions.
+        return not Atom.is_same_position(*self.__connected_positions) 
+    
+
     @staticmethod
     def is_same_bond(bond1, bond2):
         position_error = 0.1
@@ -65,7 +69,7 @@ class Bond:
     @staticmethod
     def remove_duplicates(bonds_list):
 
-        def contains(bonds_table, bond, bond_index):        # Gives the index of the 
+        def contains(bonds_table, bond, bond_index):
             output = False
             for i in range(bond_index): # Evaluate bonds before the index of the reference
                 if Bond.is_same_bond(bond, bonds_table[i]):
@@ -79,7 +83,7 @@ class Bond:
             bond = bonds_list[i]
             if not contains(bonds_list, bond, i):
                 output_list.append(bond)
-        #return [bond for bond in bonds_list if not contains(bonds_list, bond)]
+                
         return output_list
 
 

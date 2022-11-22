@@ -18,11 +18,11 @@
 #
 # ##### END GPL LICENCE BLOCK #####
 
-from crystal import Atom
-from crystal import Cell
-from vect import vect3D as v
-from geom import Bond
-from geom import Polyhedron
+from io_mesh_atomic_cif.crystal import Atom
+from io_mesh_atomic_cif.crystal import Cell
+from io_mesh_atomic_cif.vect import vect3D as v
+from io_mesh_atomic_cif.geom import Bond
+from io_mesh_atomic_cif.geom import Polyhedron
 
 
 import math as m
@@ -63,7 +63,7 @@ class Tools:
         maximum_dist = max_dist  # in Angstrom.
         max_dist_sq = m.pow(maximum_dist, 2.0)
         neighbors_list = []
-        
+     
         central_position = Central_atom.get_cartesian_position()
         
         for Other_atom in atoms_list:

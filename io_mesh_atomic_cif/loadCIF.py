@@ -14,7 +14,7 @@
 #  See the GNU General Public License for more details.
 
 #  You should have received a copy of the GNU General Public License
-#  along with Foobar. If not, see <https://www.gnu.org/licenses/>
+#  along with Atomic Blender (CIF). If not, see <https://www.gnu.org/licenses/>
 #
 # ##### END GPL LICENCE BLOCK #####
 
@@ -23,7 +23,6 @@ from gemmi import cif # MPL-2.0 License
 
 
 
-path = "./MIL-177-LT.cif"
 
 class CIF:
     def __init__(self, path):
