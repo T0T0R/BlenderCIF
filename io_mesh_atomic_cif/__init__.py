@@ -82,13 +82,7 @@ bl_info = {
 
 
 
-import subprocess
-import sys
-py_exec = sys.executable
-# ensure pip is installed & update
-subprocess.call([str(py_exec), "-m", "ensurepip", "--user"])
-# install dependencies using pip
-subprocess.call([str(py_exec),"-m", "pip", "install", "gemmi",  "--target", str(sys.exec_prefix)])
+
 
 
 import bpy
